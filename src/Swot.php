@@ -1,12 +1,12 @@
 <?php namespace SwotPHP;
 
-use Pdp\Parser;
+use Pdp\Rules;
 
 class Swot
 {
     private $parser;
 
-    public function __construct(Parser $parser)
+    public function __construct(Rules $parser)
     {
         $this->parser = $parser;
     }
@@ -69,14 +69,20 @@ class Swot
      */
     private function getDomain($text)
     {
+        if (str_contains($text, '@'))
+        {
+            $text = explode('@', $text)[1];
+        }
+
         try {
             $domain = array();
-            $url = $this->parser->parseUrl(trim($text));
+            $url = $this->parser->resolve(trim($text));
+            echo $url->toString();
 
-            $domain['tld'] = $url->host->publicSuffix;
-            $registerableDomainParts = explode('.', $url->host->registerableDomain);
+            $domain['tld'] = $url->suffix()->toString();
+            $registerableDomainParts = explode('.', $url->registrableDomain()->toString());
             $domain['sld'] = $registerableDomainParts[0];
-            $domain['host'] = $url->host;
+            $domain['host'] = $url->toString();
             $domain['path'] = implode('/', array_reverse($registerableDomainParts)) . '.txt';
 
             return $domain;
