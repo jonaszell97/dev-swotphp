@@ -77,7 +77,6 @@ class Swot
         try {
             $domain = array();
             $url = $this->parser->resolve(trim($text));
-            echo $url->toString();
 
             $domain['tld'] = $url->suffix()->toString();
             $registerableDomainParts = explode('.', $url->registrableDomain()->toString());
